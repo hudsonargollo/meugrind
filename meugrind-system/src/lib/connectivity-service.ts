@@ -34,6 +34,9 @@ export class ConnectivityService {
    * Initialize connectivity monitoring
    */
   private initializeConnectivityMonitoring(): void {
+    // Only initialize in browser environment
+    if (typeof window === 'undefined') return;
+    
     // Listen for basic online/offline events
     window.addEventListener('online', () => {
       this.updateConnectivityStatus();
@@ -44,7 +47,7 @@ export class ConnectivityService {
     });
 
     // Listen for network information changes (if supported)
-    if ('connection' in navigator) {
+    if (typeof navigator !== 'undefined' && 'connection' in navigator) {
       const connection = (navigator as any).connection;
       
       connection.addEventListener('change', () => {
@@ -194,9 +197,11 @@ export class ConnectivityService {
     });
 
     // Also emit a global event
-    window.dispatchEvent(new CustomEvent('connectivityChange', {
-      detail: info
-    }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('connectivityChange', {
+        detail: info
+      }));
+    }
   }
 
   /**

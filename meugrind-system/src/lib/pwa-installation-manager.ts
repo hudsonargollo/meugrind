@@ -34,7 +34,7 @@ class PWAInstallationManager {
   private deferredPrompt: InstallPromptEvent | null = null;
   private installationStatus: PWAInstallationStatus;
   private metrics: InstallationMetrics;
-  private listeners: Map<string, Function[]> = new Map();
+  private listeners: Map<string, ((...args: any[]) => void)[]> = new Map();
   private onboardingShown: boolean = false;
 
   constructor() {
@@ -47,6 +47,9 @@ class PWAInstallationManager {
    * Initialize PWA installation handling
    */
   private initializeInstallationHandling(): void {
+    // Only initialize in browser environment
+    if (typeof window === 'undefined') return;
+    
     // Listen for beforeinstallprompt event
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -85,6 +88,17 @@ class PWAInstallationManager {
    * Detect current installation status
    */
   private detectInstallationStatus(): PWAInstallationStatus {
+    // Default status for SSR
+    if (typeof window === 'undefined') {
+      return {
+        canInstall: false,
+        isInstalled: false,
+        isStandalone: false,
+        platform: 'unknown',
+        installMethod: 'none'
+      };
+    }
+    
     const isStandalone = this.isStandalone();
     const platform = this.detectPlatform();
     
@@ -101,6 +115,8 @@ class PWAInstallationManager {
    * Detect the platform
    */
   private detectPlatform(): 'ios' | 'android' | 'desktop' | 'unknown' {
+    if (typeof navigator === 'undefined') return 'unknown';
+    
     const userAgent = navigator.userAgent.toLowerCase();
     
     if (/iphone|ipad|ipod/.test(userAgent)) {
@@ -133,6 +149,8 @@ class PWAInstallationManager {
    * Check if app is running in standalone mode
    */
   private isStandalone(): boolean {
+    if (typeof window === 'undefined') return false;
+    
     return window.matchMedia('(display-mode: standalone)').matches ||
            (window.navigator as any).standalone === true ||
            document.referrer.includes('android-app://');
@@ -358,6 +376,19 @@ class PWAInstallationManager {
    */
   private loadMetrics(): InstallationMetrics {
     try {
+      // Only access localStorage in browser environment
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        return {
+          promptShown: 0,
+          promptAccepted: 0,
+          promptDismissed: 0,
+          installCompleted: 0,
+          uninstallDetected: 0,
+          lastPromptDate: undefined,
+          installDate: undefined
+        };
+      }
+      
       const stored = localStorage.getItem('pwa-installation-metrics');
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -385,6 +416,9 @@ class PWAInstallationManager {
    */
   private saveMetrics(): void {
     try {
+      // Only access localStorage in browser environment
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+      
       localStorage.setItem('pwa-installation-metrics', JSON.stringify(this.metrics));
     } catch (error) {
       console.error('Failed to save installation metrics:', error);
@@ -394,7 +428,7 @@ class PWAInstallationManager {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
@@ -404,7 +438,7 @@ class PWAInstallationManager {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.listeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

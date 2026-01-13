@@ -29,6 +29,12 @@ export class ServiceWorkerManager {
    * Initialize and register the service worker
    */
   private async initializeServiceWorker(): Promise<void> {
+    // Only initialize in browser environment
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+      console.warn('Service Worker not supported or not in browser environment');
+      return;
+    }
+    
     try {
       // Register the service worker
       this.registration = await navigator.serviceWorker.register('/sw.js', {
@@ -79,12 +85,16 @@ export class ServiceWorkerManager {
       case 'sync-success':
         console.log('Background sync successful:', data);
         // Emit custom event for the app to handle
-        window.dispatchEvent(new CustomEvent('backgroundSyncSuccess', { detail: data }));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('backgroundSyncSuccess', { detail: data }));
+        }
         break;
 
       case 'connectivity-change':
         console.log('Connectivity changed:', data.online ? 'online' : 'offline');
-        window.dispatchEvent(new CustomEvent('connectivityChange', { detail: data }));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('connectivityChange', { detail: data }));
+        }
         break;
 
       default:
@@ -109,12 +119,14 @@ export class ServiceWorkerManager {
    */
   private notifyUpdate(): void {
     // Emit custom event for the app to handle
-    window.dispatchEvent(new CustomEvent('serviceWorkerUpdate', {
-      detail: {
-        message: 'A new version of the app is available',
-        action: 'reload'
-      }
-    }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('serviceWorkerUpdate', {
+        detail: {
+          message: 'A new version of the app is available',
+          action: 'reload'
+        }
+      }));
+    }
   }
 
   /**
@@ -126,7 +138,9 @@ export class ServiceWorkerManager {
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       
       // Reload the page to activate the new service worker
-      window.location.reload();
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
     }
   }
 
@@ -211,7 +225,8 @@ export class ServiceWorkerManager {
    * Check if background sync is supported
    */
   isBackgroundSyncSupported(): boolean {
-    return 'serviceWorker' in navigator && 
+    return typeof window !== 'undefined' && 
+           'serviceWorker' in navigator && 
            'sync' in window.ServiceWorkerRegistration.prototype;
   }
 

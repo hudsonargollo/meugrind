@@ -206,6 +206,15 @@ class PerformanceMonitor {
   }> {
     console.log('Starting rural connectivity performance test...');
     
+    // Only run in browser environment
+    if (typeof window === 'undefined') {
+      return {
+        baselineReport: this.getReport(),
+        throttledReport: this.getReport(),
+        recommendations: ['Performance testing requires browser environment']
+      };
+    }
+    
     // Clear existing metrics
     this.clear();
     

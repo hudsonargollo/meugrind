@@ -131,6 +131,9 @@ export class OfflineService {
    * Wait for online connectivity
    */
   async waitForOnline(timeout: number = 30000): Promise<boolean> {
+    // Only wait in browser environment
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') return true;
+    
     if (navigator.onLine) {
       return true;
     }

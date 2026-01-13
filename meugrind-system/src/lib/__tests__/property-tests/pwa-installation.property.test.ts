@@ -282,7 +282,7 @@ describe('Property Test: PWA Installation Capability', () => {
       fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 10 }),
       (eventNames) => {
         // Create a simple event manager for testing
-        const listeners = new Map<string, Function[]>();
+        const listeners = new Map<string, ((...args: any[]) => void)[]>();
         const callbacks = eventNames.map(() => jest.fn());
 
         // Register listeners

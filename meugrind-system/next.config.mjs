@@ -22,46 +22,24 @@ const nextConfig = {
     ],
   }),
   
-  // Static export for Cloudflare Pages
-  output: 'export',
+  // Static export for Cloudflare Pages (disabled for now due to SSR issues)
+  // output: 'export',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
+  
+  // Disable SSR for PWA compatibility
+  experimental: {
+    esmExternals: false,
+  },
   
   // Production optimizations
   compress: true,
   poweredByHeader: false,
   
-  // Security headers
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
-    ];
-  },
-
   // Image optimization
   images: {
+    unoptimized: true, // Required for static export
     formats: ['image/webp', 'image/avif'],
-    minimumCacheTTL: 60,
   },
 
   // Bundle analyzer (enable when needed)

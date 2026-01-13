@@ -42,7 +42,7 @@ export interface FocusModeData {
 
 class ServiceWorkerManager {
   private registration: ServiceWorkerRegistration | null = null;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((...args: any[]) => void)[]> = new Map();
 
   /**
    * Initialize the service worker manager
@@ -138,6 +138,8 @@ class ServiceWorkerManager {
    * Check if app is running in standalone mode (PWA)
    */
   isStandalone(): boolean {
+    if (typeof window === 'undefined') return false;
+    
     return window.matchMedia('(display-mode: standalone)').matches ||
            (window.navigator as any).standalone === true;
   }
@@ -152,7 +154,7 @@ class ServiceWorkerManager {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
@@ -162,7 +164,7 @@ class ServiceWorkerManager {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

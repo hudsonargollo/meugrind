@@ -1,10 +1,12 @@
-# Cloudflare Pages Configuration
+# Cloudflare Pages Configuration for MEUGRIND System
 name = "meugrind-system"
 compatibility_date = "2024-01-12"
 
+# Production environment
 [env.production]
 name = "meugrind-system"
 
+# Preview environment
 [env.preview]
 name = "meugrind-system-preview"
 
@@ -12,9 +14,9 @@ name = "meugrind-system-preview"
 [build]
 command = "npm run build:production"
 cwd = "."
-watch_dir = "src"
+watch_dir = ["src", "public", "next.config.mjs"]
 
-# Environment variables (set in Cloudflare dashboard)
+# Environment variables (override with secrets for sensitive data)
 [vars]
 NODE_ENV = "production"
 NEXT_PUBLIC_PWA_ENABLED = "true"
@@ -23,5 +25,39 @@ NEXT_PUBLIC_ENABLE_PUSH_NOTIFICATIONS = "true"
 NEXT_PUBLIC_ENABLE_BACKGROUND_SYNC = "true"
 
 # Pages configuration
-[[pages_build_output_dir]]
-directory = "out"
+[pages]
+build_output_dir = "out"
+build_caching = true
+
+# Custom headers and redirects
+[[pages.headers]]
+for = "/*"
+[pages.headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[pages.headers]]
+for = "*.html"
+[pages.headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+
+[[pages.headers]]
+for = "/sw.js"
+[pages.headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+Service-Worker-Allowed = "/"
+
+# PWA and offline support redirects
+[[pages.redirects]]
+from = "/offline"
+to = "/offline.html"
+status = 200
+
+# SPA fallback for client-side routing
+[[pages.redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

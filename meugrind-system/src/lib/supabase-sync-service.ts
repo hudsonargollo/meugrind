@@ -42,20 +42,22 @@ export class SupabaseSyncService {
       }
     });
 
-    // Listen for eco mode changes
-    window.addEventListener('ecoModeChanged', (event: any) => {
-      this.ecoModeActive = event.detail.active;
-      this.syncPaused = event.detail.active && event.detail.level === 'aggressive';
-      
-      if (this.syncPaused) {
-        console.log('Supabase sync paused due to aggressive power saving mode');
-        this.unsubscribeFromRealtime();
-      } else if (this.ecoModeActive) {
-        console.log('Supabase sync throttled due to eco mode');
-      } else {
-        this.subscribeToRealtime();
-      }
-    });
+    // Listen for eco mode changes (only in browser environment)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('ecoModeChanged', (event: any) => {
+        this.ecoModeActive = event.detail.active;
+        this.syncPaused = event.detail.active && event.detail.level === 'aggressive';
+        
+        if (this.syncPaused) {
+          console.log('Supabase sync paused due to aggressive power saving mode');
+          this.unsubscribeFromRealtime();
+        } else if (this.ecoModeActive) {
+          console.log('Supabase sync throttled due to eco mode');
+        } else {
+          this.subscribeToRealtime();
+        }
+      });
+    }
 
     // Initialize realtime subscriptions if configured
     if (isSupabaseConfigured()) {
@@ -430,7 +432,9 @@ export class SupabaseSyncService {
     console.log(`Supabase sync conflict created for ${entityType}:${localData.id}`);
     
     // Emit event for UI to handle conflict resolution
-    window.dispatchEvent(new CustomEvent('syncConflict', { detail: conflict }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('syncConflict', { detail: conflict }));
+    }
   }
 
   /**

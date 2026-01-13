@@ -336,17 +336,23 @@ class PowerManagementService {
       }
       
       // Dispatch custom event for other services to respond
-      window.dispatchEvent(new CustomEvent('ecoModeChanged', {
-        detail: { active: true, level: powerSavingLevel }
-      }));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('ecoModeChanged', {
+          detail: { active: true, level: powerSavingLevel }
+        }));
+      }
     } else {
       // Remove eco mode classes
-      document.documentElement.classList.remove('eco-mode', 'eco-mode-aggressive');
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.remove('eco-mode', 'eco-mode-aggressive');
+      }
       
       // Dispatch custom event
-      window.dispatchEvent(new CustomEvent('ecoModeChanged', {
-        detail: { active: false, level: 'none' }
-      }));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('ecoModeChanged', {
+          detail: { active: false, level: 'none' }
+        }));
+      }
     }
   }
 

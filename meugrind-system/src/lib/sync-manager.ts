@@ -23,13 +23,16 @@ export interface SyncResult {
 }
 
 export class SyncManager {
-  private isOnline: boolean = navigator.onLine;
+  private isOnline: boolean = typeof navigator !== 'undefined' ? navigator.onLine : true;
   private syncInProgress: boolean = false;
   private retryTimeouts: Map<string, NodeJS.Timeout> = new Map();
   private ecoModeActive: boolean = false;
   private syncPaused: boolean = false;
 
   constructor() {
+    // Only initialize in browser environment
+    if (typeof window === 'undefined') return;
+    
     // Listen for online/offline events
     window.addEventListener('online', () => {
       this.isOnline = true;

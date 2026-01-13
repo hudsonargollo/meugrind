@@ -47,6 +47,9 @@ export class PomodoroService {
   }
 
   private loadSettings(): void {
+    // Only access localStorage in browser environment
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    
     const saved = localStorage.getItem('pomodoroSettings');
     if (saved) {
       this.settings = { ...this.getDefaultSettings(), ...JSON.parse(saved) };
@@ -54,6 +57,9 @@ export class PomodoroService {
   }
 
   private saveSettings(): void {
+    // Only access localStorage in browser environment
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    
     localStorage.setItem('pomodoroSettings', JSON.stringify(this.settings));
   }
 

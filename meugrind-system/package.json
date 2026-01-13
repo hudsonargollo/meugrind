@@ -13,8 +13,13 @@
     "test:property:watch": "jest --testNamePattern='Property' --watch --verbose",
     "build:analyze": "ANALYZE=true npm run build",
     "export": "next export",
-    "build:production": "next build && next export",
-    "deploy:build": "npm run lint && npm run test && npm run build:production"
+    "build:production": "next build",
+    "deploy:build": "npm run lint && npm run test && npm run build:production",
+    "wrangler:deploy": "wrangler pages deploy out --project-name=meugrind-system",
+    "wrangler:deploy:production": "wrangler pages deploy out --project-name=meugrind-system --env=production",
+    "wrangler:deploy:preview": "wrangler pages deploy out --project-name=meugrind-system --env=preview",
+    "deploy:wrangler": "npm run deploy:build && npm run wrangler:deploy:production",
+    "deploy:wrangler:preview": "npm run deploy:build && npm run wrangler:deploy:preview"
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.17.1",
