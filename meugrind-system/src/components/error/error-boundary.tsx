@@ -205,7 +205,7 @@ function ErrorFallback({
               {isCritical ? 'Application Error' : 'Component Error'}
             </h3>
             <p className="text-sm text-gray-500">
-              Something went wrong. We're working to fix this.
+              Something went wrong. We&apos;re working to fix this.
             </p>
           </div>
         </div>

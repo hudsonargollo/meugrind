@@ -454,12 +454,12 @@ class SystemValidator {
       'PR Management'
     ];
 
-    for (const module of modules) {
-      await this.runTest(category, `${module} Module`, async () => {
+    for (const moduleItem of modules) {
+      await this.runTest(category, `${moduleItem} Module`, async () => {
         // Test that module components can be imported/loaded
         // In a real implementation, you'd test module-specific functionality
         
-        return { module, status: 'available' };
+        return { module: moduleItem, status: 'available' };
       });
     }
   }

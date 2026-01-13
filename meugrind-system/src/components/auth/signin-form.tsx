@@ -167,7 +167,7 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
 
         <div className="text-center">
           <span className="text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               type="button"
               onClick={onSignUpClick}

@@ -5,7 +5,7 @@
  * to optimize performance in the MEUGRIND system.
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Intersection Observer hook for lazy loading
@@ -318,6 +318,8 @@ export function LazyWrapper({
     <div ref={ref}>
       {isIntersecting ? children : fallback}
     </div>
+  );
+}
   );
 }
 

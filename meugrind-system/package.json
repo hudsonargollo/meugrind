@@ -19,7 +19,11 @@
     "wrangler:deploy:production": "wrangler pages deploy out --project-name=meugrind-system --env=production",
     "wrangler:deploy:preview": "wrangler pages deploy out --project-name=meugrind-system --env=preview",
     "deploy:wrangler": "npm run deploy:build && npm run wrangler:deploy:production",
-    "deploy:wrangler:preview": "npm run deploy:build && npm run wrangler:deploy:preview"
+    "deploy:wrangler:preview": "npm run deploy:build && npm run wrangler:deploy:preview",
+    "deploy": "node deploy.js",
+    "deploy:preview": "node deploy.js --preview",
+    "deploy:fast": "node deploy.js --skip-tests",
+    "deploy:build-only": "node deploy.js --skip-build"
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.17.1",
