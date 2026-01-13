@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: meugrind-system/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./meugrind-system
+      run: npm ci
+    
+    - name: Run linting
+      working-directory: ./meugrind-system
+      run: npm run lint
+    
+    - name: Run unit tests
+      working-directory: ./meugrind-system
+      run: npm run test -- --coverage --watchAll=false
+    
+    - name: Run property-based tests
+      working-directory: ./meugrind-system
+      run: npm run test:property -- --watchAll=false
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        directory: ./meugrind-system/coverage
+        fail_ci_if_error: false
+    
+    - name: Build application
+      working-directory: ./meugrind-system
+      run: npm run build
+      env:
+        NODE_ENV: production
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files-${{ matrix.node-version }}
+        path: |
+          meugrind-system/.next/
+          meugrind-system/out/
+        retention-days: 1
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: meugrind-system/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./meugrind-system
+      run: npm ci
+    
+    - name: Run security audit
+      working-directory: ./meugrind-system
+      run: npm audit --audit-level=high
+    
+    - name: Check for outdated dependencies
+      working-directory: ./meugrind-system
+      run: npm outdated || true

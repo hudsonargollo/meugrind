@@ -1,0 +1,52 @@
+# Cloudflare Pages Headers Configuration
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-XSS-Protection: 1; mode=block
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# PWA and Service Worker
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /
+
+/manifest.json
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=86400
+
+# Static Assets
+/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images
+*.png
+  Cache-Control: public, max-age=86400
+  
+*.jpg
+  Cache-Control: public, max-age=86400
+  
+*.jpeg
+  Cache-Control: public, max-age=86400
+  
+*.webp
+  Cache-Control: public, max-age=86400
+  
+*.avif
+  Cache-Control: public, max-age=86400
+
+# Fonts
+*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  
+*.woff
+  Cache-Control: public, max-age=31536000, immutable
+
+# API Routes (if any)
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate

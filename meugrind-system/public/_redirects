@@ -1,0 +1,17 @@
+# Cloudflare Pages Redirects Configuration
+
+# SPA fallback - redirect all non-file requests to index.html
+/*    /index.html   200
+
+# PWA Service Worker
+/sw.js    /sw.js    200
+/manifest.json    /manifest.json    200
+
+# API routes (if any future API routes are added)
+/api/*    /api/:splat    200
+
+# Security redirects
+/admin    /    301
+/wp-admin    /    301
+/.env    /    301
+/.git    /    301
