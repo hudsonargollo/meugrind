@@ -1,358 +1,475 @@
+/**
+ * Performance Monitoring Service
+ * 
+ * Monitors application performance metrics and provides optimization insights
+ * for the MEUGRIND productivity system.
+ */
+
 interface PerformanceMetric {
   name: string;
-  startTime: number;
-  endTime?: number;
-  duration?: number;
+  value: number;
+  timestamp: number;
+  category: 'navigation' | 'resource' | 'paint' | 'interaction' | 'custom';
   metadata?: Record<string, any>;
 }
 
 interface PerformanceReport {
-  totalOperations: number;
-  averageResponseTime: number;
-  slowestOperations: PerformanceMetric[];
-  fastestOperations: PerformanceMetric[];
-  operationsByType: Record<string, {
-    count: number;
-    averageTime: number;
-    totalTime: number;
-  }>;
-  sub200msOperations: number;
-  sub200msPercentage: number;
+  metrics: PerformanceMetric[];
+  summary: {
+    totalMetrics: number;
+    averageResponseTime: number;
+    slowestOperations: PerformanceMetric[];
+    recommendations: string[];
+  };
+  timestamp: number;
 }
 
 class PerformanceMonitor {
   private metrics: PerformanceMetric[] = [];
-  private maxMetrics = 1000; // Keep last 1000 metrics
-  private isEnabled = true;
+  private observers: PerformanceObserver[] = [];
+  private isMonitoring = false;
+  private readonly maxMetrics = 1000; // Limit stored metrics for memory management
 
-  // Start timing an operation
-  startTiming(operationName: string, metadata?: Record<string, any>): string {
-    if (!this.isEnabled) return '';
-    
-    const metricId = `${operationName}_${Date.now()}_${Math.random()}`;
-    const metric: PerformanceMetric = {
-      name: operationName,
-      startTime: performance.now(),
-      metadata,
-    };
-    
+  constructor() {
+    this.initialize();
+  }
+
+  /**
+   * Initialize performance monitoring
+   */
+  private initialize() {
+    if (typeof window === 'undefined') return;
+
+    try {
+      // Monitor navigation timing
+      this.observeNavigationTiming();
+      
+      // Monitor resource loading
+      this.observeResourceTiming();
+      
+      // Monitor paint timing
+      this.observePaintTiming();
+      
+      // Monitor layout shifts
+      this.observeLayoutShifts();
+      
+      // Monitor first input delay
+      this.observeFirstInputDelay();
+
+      this.isMonitoring = true;
+      console.log('Performance monitoring initialized');
+    } catch (error) {
+      console.warn('Performance monitoring initialization failed:', error);
+    }
+  }
+
+  /**
+   * Monitor navigation timing metrics
+   */
+  private observeNavigationTiming() {
+    if (!('PerformanceObserver' in window)) return;
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.entryType === 'navigation') {
+          const navEntry = entry as PerformanceNavigationTiming;
+          
+          this.addMetric({
+            name: 'navigation.domContentLoaded',
+            value: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
+            timestamp: Date.now(),
+            category: 'navigation',
+            metadata: {
+              type: navEntry.type,
+              redirectCount: navEntry.redirectCount,
+            },
+          });
+
+          this.addMetric({
+            name: 'navigation.loadComplete',
+            value: navEntry.loadEventEnd - navEntry.loadEventStart,
+            timestamp: Date.now(),
+            category: 'navigation',
+          });
+
+          this.addMetric({
+            name: 'navigation.totalTime',
+            value: navEntry.loadEventEnd - navEntry.fetchStart,
+            timestamp: Date.now(),
+            category: 'navigation',
+          });
+        }
+      }
+    });
+
+    try {
+      observer.observe({ entryTypes: ['navigation'] });
+      this.observers.push(observer);
+    } catch (error) {
+      console.warn('Navigation timing observer failed:', error);
+    }
+  }
+
+  /**
+   * Monitor resource loading performance
+   */
+  private observeResourceTiming() {
+    if (!('PerformanceObserver' in window)) return;
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.entryType === 'resource') {
+          const resourceEntry = entry as PerformanceResourceTiming;
+          
+          // Only monitor significant resources
+          if (resourceEntry.duration > 100) {
+            this.addMetric({
+              name: 'resource.loadTime',
+              value: resourceEntry.duration,
+              timestamp: Date.now(),
+              category: 'resource',
+              metadata: {
+                name: resourceEntry.name,
+                size: resourceEntry.transferSize,
+                type: this.getResourceType(resourceEntry.name),
+              },
+            });
+          }
+        }
+      }
+    });
+
+    try {
+      observer.observe({ entryTypes: ['resource'] });
+      this.observers.push(observer);
+    } catch (error) {
+      console.warn('Resource timing observer failed:', error);
+    }
+  }
+
+  /**
+   * Monitor paint timing metrics
+   */
+  private observePaintTiming() {
+    if (!('PerformanceObserver' in window)) return;
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.entryType === 'paint') {
+          this.addMetric({
+            name: `paint.${entry.name}`,
+            value: entry.startTime,
+            timestamp: Date.now(),
+            category: 'paint',
+          });
+        }
+      }
+    });
+
+    try {
+      observer.observe({ entryTypes: ['paint'] });
+      this.observers.push(observer);
+    } catch (error) {
+      console.warn('Paint timing observer failed:', error);
+    }
+  }
+
+  /**
+   * Monitor layout shifts (CLS)
+   */
+  private observeLayoutShifts() {
+    if (!('PerformanceObserver' in window)) return;
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
+          this.addMetric({
+            name: 'interaction.layoutShift',
+            value: (entry as any).value,
+            timestamp: Date.now(),
+            category: 'interaction',
+          });
+        }
+      }
+    });
+
+    try {
+      observer.observe({ entryTypes: ['layout-shift'] });
+      this.observers.push(observer);
+    } catch (error) {
+      console.warn('Layout shift observer failed:', error);
+    }
+  }
+
+  /**
+   * Monitor first input delay (FID)
+   */
+  private observeFirstInputDelay() {
+    if (!('PerformanceObserver' in window)) return;
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.entryType === 'first-input') {
+          this.addMetric({
+            name: 'interaction.firstInputDelay',
+            value: (entry as any).processingStart - entry.startTime,
+            timestamp: Date.now(),
+            category: 'interaction',
+          });
+        }
+      }
+    });
+
+    try {
+      observer.observe({ entryTypes: ['first-input'] });
+      this.observers.push(observer);
+    } catch (error) {
+      console.warn('First input delay observer failed:', error);
+    }
+  }
+
+  /**
+   * Add a custom performance metric
+   */
+  addMetric(metric: PerformanceMetric) {
     this.metrics.push(metric);
     
-    // Keep only the most recent metrics
+    // Limit stored metrics to prevent memory issues
     if (this.metrics.length > this.maxMetrics) {
       this.metrics = this.metrics.slice(-this.maxMetrics);
     }
-    
-    return metricId;
   }
 
-  // End timing an operation
-  endTiming(operationName: string): number | null {
-    if (!this.isEnabled) return null;
-    
-    const now = performance.now();
-    
-    // Find the most recent metric with this name that hasn't been completed
-    const metricIndex = this.metrics.findIndex(
-      m => m.name === operationName && !m.endTime
-    );
-    
-    if (metricIndex === -1) {
-      console.warn(`No active timing found for operation: ${operationName}`);
-      return null;
-    }
-    
-    const metric = this.metrics[metricIndex];
-    metric.endTime = now;
-    metric.duration = now - metric.startTime;
-    
-    // Log slow operations (>200ms requirement)
-    if (metric.duration > 200) {
-      console.warn(`Slow operation detected: ${operationName} took ${metric.duration.toFixed(2)}ms`);
-    }
-    
-    return metric.duration;
-  }
-
-  // Measure a function execution
-  async measure<T>(
-    operationName: string,
-    fn: () => Promise<T> | T,
-    metadata?: Record<string, any>
-  ): Promise<{ result: T; duration: number }> {
-    if (!this.isEnabled) {
-      const result = await fn();
-      return { result, duration: 0 };
-    }
-    
+  /**
+   * Measure execution time of a function
+   */
+  async measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
     const startTime = performance.now();
     
     try {
       const result = await fn();
-      const endTime = performance.now();
-      const duration = endTime - startTime;
+      const duration = performance.now() - startTime;
       
-      this.metrics.push({
-        name: operationName,
-        startTime,
-        endTime,
-        duration,
-        metadata,
+      this.addMetric({
+        name: `custom.${name}`,
+        value: duration,
+        timestamp: Date.now(),
+        category: 'custom',
       });
       
-      // Keep only the most recent metrics
-      if (this.metrics.length > this.maxMetrics) {
-        this.metrics = this.metrics.slice(-this.maxMetrics);
-      }
-      
-      // Log slow operations
-      if (duration > 200) {
-        console.warn(`Slow operation detected: ${operationName} took ${duration.toFixed(2)}ms`);
-      }
-      
-      return { result, duration };
+      return result;
     } catch (error) {
-      const endTime = performance.now();
-      const duration = endTime - startTime;
+      const duration = performance.now() - startTime;
       
-      this.metrics.push({
-        name: `${operationName}_ERROR`,
-        startTime,
-        endTime,
-        duration,
-        metadata: { ...metadata, error: error instanceof Error ? error.message : 'Unknown error' },
+      this.addMetric({
+        name: `custom.${name}.error`,
+        value: duration,
+        timestamp: Date.now(),
+        category: 'custom',
+        metadata: { error: error instanceof Error ? error.message : 'Unknown error' },
       });
       
       throw error;
     }
   }
 
-  // Get performance report
-  getReport(timeWindowMs?: number): PerformanceReport {
-    const now = performance.now();
-    const cutoffTime = timeWindowMs ? now - timeWindowMs : 0;
-    
-    const relevantMetrics = this.metrics.filter(
-      m => m.duration !== undefined && m.startTime >= cutoffTime
-    );
-    
-    if (relevantMetrics.length === 0) {
-      return {
-        totalOperations: 0,
-        averageResponseTime: 0,
-        slowestOperations: [],
-        fastestOperations: [],
-        operationsByType: {},
-        sub200msOperations: 0,
-        sub200msPercentage: 100,
-      };
-    }
-    
-    const totalTime = relevantMetrics.reduce((sum, m) => sum + (m.duration || 0), 0);
-    const averageResponseTime = totalTime / relevantMetrics.length;
-    
-    // Sort by duration
-    const sortedByDuration = [...relevantMetrics].sort((a, b) => (b.duration || 0) - (a.duration || 0));
-    
-    // Group by operation type
-    const operationsByType: Record<string, { count: number; averageTime: number; totalTime: number }> = {};
-    
-    relevantMetrics.forEach(metric => {
-      if (!operationsByType[metric.name]) {
-        operationsByType[metric.name] = { count: 0, averageTime: 0, totalTime: 0 };
-      }
-      
-      const op = operationsByType[metric.name];
-      op.count++;
-      op.totalTime += metric.duration || 0;
-      op.averageTime = op.totalTime / op.count;
-    });
-    
-    // Count sub-200ms operations
-    const sub200msOperations = relevantMetrics.filter(m => (m.duration || 0) <= 200).length;
-    const sub200msPercentage = (sub200msOperations / relevantMetrics.length) * 100;
-    
-    return {
-      totalOperations: relevantMetrics.length,
-      averageResponseTime,
-      slowestOperations: sortedByDuration.slice(0, 10),
-      fastestOperations: sortedByDuration.slice(-10).reverse(),
-      operationsByType,
-      sub200msOperations,
-      sub200msPercentage,
-    };
-  }
-
-  // Clear all metrics
-  clear(): void {
-    this.metrics = [];
-  }
-
-  // Enable/disable monitoring
-  setEnabled(enabled: boolean): void {
-    this.isEnabled = enabled;
-  }
-
-  // Get current metrics
-  getMetrics(): PerformanceMetric[] {
-    return [...this.metrics];
-  }
-
-  // Test performance with simulated rural connectivity
-  async testRuralConnectivity(): Promise<{
-    baselineReport: PerformanceReport;
-    throttledReport: PerformanceReport;
-    recommendations: string[];
-  }> {
-    console.log('Starting rural connectivity performance test...');
-    
-    // Only run in browser environment
-    if (typeof window === 'undefined') {
-      return {
-        baselineReport: this.getReport(),
-        throttledReport: this.getReport(),
-        recommendations: ['Performance testing requires browser environment']
-      };
-    }
-    
-    // Clear existing metrics
-    this.clear();
-    
-    // Test baseline performance
-    await this.runPerformanceTests('baseline');
-    const baselineReport = this.getReport();
-    
-    // Clear metrics for throttled test
-    this.clear();
-    
-    // Simulate rural connectivity (add artificial delays)
-    const originalFetch = window.fetch;
-    window.fetch = async (...args) => {
-      // Add 500-2000ms delay to simulate rural connectivity
-      const delay = Math.random() * 1500 + 500;
-      await new Promise(resolve => setTimeout(resolve, delay));
-      return originalFetch(...args);
-    };
+  /**
+   * Measure execution time of a synchronous function
+   */
+  measure<T>(name: string, fn: () => T): T {
+    const startTime = performance.now();
     
     try {
-      await this.runPerformanceTests('throttled');
-      const throttledReport = this.getReport();
+      const result = fn();
+      const duration = performance.now() - startTime;
       
-      // Generate recommendations
-      const recommendations = this.generateRecommendations(baselineReport, throttledReport);
+      this.addMetric({
+        name: `custom.${name}`,
+        value: duration,
+        timestamp: Date.now(),
+        category: 'custom',
+      });
       
-      return {
-        baselineReport,
-        throttledReport,
-        recommendations,
-      };
-    } finally {
-      // Restore original fetch
-      window.fetch = originalFetch;
+      return result;
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      
+      this.addMetric({
+        name: `custom.${name}.error`,
+        value: duration,
+        timestamp: Date.now(),
+        category: 'custom',
+        metadata: { error: error instanceof Error ? error.message : 'Unknown error' },
+      });
+      
+      throw error;
     }
   }
 
-  private async runPerformanceTests(testType: string): Promise<void> {
-    const testOperations = [
-      () => this.testDatabaseRead(),
-      () => this.testDatabaseWrite(),
-      () => this.testUIRender(),
-      () => this.testDataSync(),
-      () => this.testCacheAccess(),
-    ];
+  /**
+   * Mark a custom timing point
+   */
+  mark(name: string, metadata?: Record<string, any>) {
+    if (typeof window !== 'undefined' && 'performance' in window) {
+      performance.mark(name);
+    }
     
-    // Run each test multiple times
-    for (let i = 0; i < 5; i++) {
-      for (const testOp of testOperations) {
-        await testOp();
-        // Small delay between tests
-        await new Promise(resolve => setTimeout(resolve, 100));
+    this.addMetric({
+      name: `mark.${name}`,
+      value: performance.now(),
+      timestamp: Date.now(),
+      category: 'custom',
+      metadata,
+    });
+  }
+
+  /**
+   * Measure time between two marks
+   */
+  measureBetweenMarks(name: string, startMark: string, endMark: string) {
+    if (typeof window !== 'undefined' && 'performance' in window) {
+      try {
+        performance.measure(name, startMark, endMark);
+        const measure = performance.getEntriesByName(name, 'measure')[0];
+        
+        this.addMetric({
+          name: `measure.${name}`,
+          value: measure.duration,
+          timestamp: Date.now(),
+          category: 'custom',
+        });
+      } catch (error) {
+        console.warn('Failed to measure between marks:', error);
       }
     }
   }
 
-  private async testDatabaseRead(): Promise<void> {
-    await this.measure('database_read', async () => {
-      // Simulate database read
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 50 + 10));
-      return { data: 'test' };
-    });
+  /**
+   * Get performance report
+   */
+  getReport(): PerformanceReport {
+    const now = Date.now();
+    const recentMetrics = this.metrics.filter(m => now - m.timestamp < 300000); // Last 5 minutes
+    
+    const responseTimeMetrics = recentMetrics.filter(m => 
+      m.name.includes('custom.') || m.name.includes('resource.') || m.name.includes('navigation.')
+    );
+    
+    const averageResponseTime = responseTimeMetrics.length > 0
+      ? responseTimeMetrics.reduce((sum, m) => sum + m.value, 0) / responseTimeMetrics.length
+      : 0;
+    
+    const slowestOperations = [...recentMetrics]
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+    
+    const recommendations = this.generateRecommendations(recentMetrics);
+    
+    return {
+      metrics: recentMetrics,
+      summary: {
+        totalMetrics: recentMetrics.length,
+        averageResponseTime,
+        slowestOperations,
+        recommendations,
+      },
+      timestamp: now,
+    };
   }
 
-  private async testDatabaseWrite(): Promise<void> {
-    await this.measure('database_write', async () => {
-      // Simulate database write
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 20));
-      return { success: true };
-    });
-  }
-
-  private async testUIRender(): Promise<void> {
-    await this.measure('ui_render', async () => {
-      // Simulate UI rendering
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 30 + 5));
-      return { rendered: true };
-    });
-  }
-
-  private async testDataSync(): Promise<void> {
-    await this.measure('data_sync', async () => {
-      // Simulate data synchronization
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 50));
-      return { synced: true };
-    });
-  }
-
-  private async testCacheAccess(): Promise<void> {
-    await this.measure('cache_access', async () => {
-      // Simulate cache access
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 10 + 1));
-      return { cached: true };
-    });
-  }
-
-  private generateRecommendations(baseline: PerformanceReport, throttled: PerformanceReport): string[] {
+  /**
+   * Generate performance recommendations
+   */
+  private generateRecommendations(metrics: PerformanceMetric[]): string[] {
     const recommendations: string[] = [];
     
-    // Check if sub-200ms requirement is met
-    if (baseline.sub200msPercentage < 95) {
-      recommendations.push(
-        `Only ${baseline.sub200msPercentage.toFixed(1)}% of operations meet the sub-200ms requirement. Consider optimizing slow operations.`
-      );
+    // Check for slow operations
+    const slowOperations = metrics.filter(m => m.value > 200);
+    if (slowOperations.length > 0) {
+      recommendations.push(`${slowOperations.length} operations took longer than 200ms. Consider optimization.`);
     }
     
-    if (throttled.sub200msPercentage < 80) {
-      recommendations.push(
-        'Performance degrades significantly under poor connectivity. Implement more aggressive caching and offline-first patterns.'
-      );
+    // Check for layout shifts
+    const layoutShifts = metrics.filter(m => m.name === 'interaction.layoutShift');
+    const totalCLS = layoutShifts.reduce((sum, m) => sum + m.value, 0);
+    if (totalCLS > 0.1) {
+      recommendations.push('Cumulative Layout Shift is high. Review element sizing and loading.');
     }
     
-    // Check for slow operation types
-    Object.entries(baseline.operationsByType).forEach(([opType, stats]) => {
-      if (stats.averageTime > 200) {
-        recommendations.push(
-          `Operation type "${opType}" averages ${stats.averageTime.toFixed(1)}ms. Consider optimization.`
-        );
-      }
-    });
-    
-    // Compare baseline vs throttled
-    const performanceDegradation = (throttled.averageResponseTime - baseline.averageResponseTime) / baseline.averageResponseTime;
-    
-    if (performanceDegradation > 2) {
-      recommendations.push(
-        'Performance degrades significantly under poor connectivity. Implement request batching and background sync.'
-      );
+    // Check for large resources
+    const largeResources = metrics.filter(m => 
+      m.name === 'resource.loadTime' && 
+      m.metadata?.size && 
+      m.metadata.size > 1000000 // 1MB
+    );
+    if (largeResources.length > 0) {
+      recommendations.push(`${largeResources.length} resources are larger than 1MB. Consider compression or lazy loading.`);
     }
     
-    if (recommendations.length === 0) {
-      recommendations.push('Performance looks good! All operations meet the sub-200ms requirement.');
+    // Check first input delay
+    const fidMetrics = metrics.filter(m => m.name === 'interaction.firstInputDelay');
+    const avgFID = fidMetrics.length > 0 
+      ? fidMetrics.reduce((sum, m) => sum + m.value, 0) / fidMetrics.length 
+      : 0;
+    if (avgFID > 100) {
+      recommendations.push('First Input Delay is high. Consider reducing JavaScript execution time.');
     }
     
     return recommendations;
   }
+
+  /**
+   * Get resource type from URL
+   */
+  private getResourceType(url: string): string {
+    if (url.includes('.js')) return 'javascript';
+    if (url.includes('.css')) return 'stylesheet';
+    if (url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)) return 'image';
+    if (url.match(/\.(woff|woff2|ttf|otf)$/)) return 'font';
+    return 'other';
+  }
+
+  /**
+   * Clear all metrics
+   */
+  clearMetrics() {
+    this.metrics = [];
+  }
+
+  /**
+   * Stop monitoring
+   */
+  stop() {
+    this.observers.forEach(observer => observer.disconnect());
+    this.observers = [];
+    this.isMonitoring = false;
+  }
+
+  /**
+   * Check if monitoring is active
+   */
+  isActive(): boolean {
+    return this.isMonitoring;
+  }
+
+  /**
+   * Get current metrics count
+   */
+  getMetricsCount(): number {
+    return this.metrics.length;
+  }
+
+  /**
+   * Export metrics for analysis
+   */
+  exportMetrics(): PerformanceMetric[] {
+    return [...this.metrics];
+  }
 }
 
-// Singleton instance
+// Create singleton instance
 export const performanceMonitor = new PerformanceMonitor();
+
+// Export types and monitor
+export type { PerformanceMetric, PerformanceReport };
 export default performanceMonitor;

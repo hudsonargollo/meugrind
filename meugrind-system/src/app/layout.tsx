@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider } from "../hooks/use-auth";
+import { AuthProvider } from "../components/auth/auth-provider";
 import { InterfaceContextProvider } from "../hooks/use-interface-context";
 import { OptimisticProvider } from "../hooks/use-optimistic-updates";
 import { ServiceWorkerProvider } from "../components/interface/service-worker-provider";
