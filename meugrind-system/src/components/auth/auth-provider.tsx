@@ -22,9 +22,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function useAuthContext() {
   const context = useContext(AuthContext);
+  
+  // Provide safe defaults during SSR when context is not available
   if (context === undefined) {
+    if (typeof window === 'undefined') {
+      // During SSR, return safe defaults
+      return {
+        user: null,
+        loading: true,
+        error: null,
+        isAuthenticated: false,
+      };
+    }
     throw new Error('useAuthContext must be used within an AuthProvider');
   }
+  
   return context;
 }
 
@@ -33,10 +45,23 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const [mounted, setMounted] = useState(false);
   const auth = useAuth();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Provide safe defaults during SSR
+  const contextValue = mounted ? auth : {
+    user: null,
+    loading: true,
+    error: null,
+    isAuthenticated: false,
+  };
+
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

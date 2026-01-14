@@ -13,13 +13,14 @@ interface MyGrindWidgetProps {
 }
 
 export function MyGrindWidget({ className }: MyGrindWidgetProps) {
-  const { isPersonal } = useAuth();
+  const { user, hasRole } = useAuth();
+  const isPersonal = hasRole('personal');
   const [actions, setActions] = useState<ImmediateAction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isPersonal()) {
+    if (isPersonal) {
       loadImmediateActions();
     }
   }, [isPersonal]);

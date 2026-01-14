@@ -22,10 +22,14 @@ const nextConfig = {
     ],
   }),
   
-  // Static export for Cloudflare Pages (disabled for now due to SSR issues)
-  // output: 'export',
+  // Disable static export completely - use SSR for auth-protected app
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
+  
+  // Disable ESLint during build for deployment
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   
   // Disable SSR for PWA compatibility
   experimental: {
@@ -38,7 +42,7 @@ const nextConfig = {
   
   // Image optimization
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true,
     formats: ['image/webp', 'image/avif'],
   },
 

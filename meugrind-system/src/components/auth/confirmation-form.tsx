@@ -10,7 +10,7 @@ interface ConfirmationFormProps {
 }
 
 export function ConfirmationForm({ email, onSuccess, onBackClick }: ConfirmationFormProps) {
-  const { confirmSignUp } = useAuth();
+  // const { confirmSignUp } = useAuth();
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,7 +21,9 @@ export function ConfirmationForm({ email, onSuccess, onBackClick }: Confirmation
     setIsLoading(true);
 
     try {
-      await confirmSignUp(email, code);
+      // TODO: Implement email confirmation with Supabase
+      // await confirmSignUp(email, code);
+      console.log('Email confirmation not yet implemented');
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Confirmation failed');

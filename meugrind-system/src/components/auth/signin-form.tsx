@@ -7,7 +7,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuthOperations } from '../../hooks/use-auth';
+import authService from '../../lib/supabase-auth-service';
 
 interface SignInFormProps {
   onSuccess?: () => void;
@@ -16,31 +16,37 @@ interface SignInFormProps {
 }
 
 export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInFormProps) {
-  const { signIn, loading, error, clearError } = useAuthOperations();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
+    setError(null);
 
     if (!formData.email || !formData.password) {
       return;
     }
 
-    const result = await signIn(formData);
+    setLoading(true);
+    const result = await authService.signIn(formData);
+    setLoading(false);
+    
     if (result.success) {
       onSuccess?.();
+    } else {
+      setError(result.error || 'Sign in failed');
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) clearError();
+    if (error) setError(null);
   };
 
   return (

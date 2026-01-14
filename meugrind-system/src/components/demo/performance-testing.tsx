@@ -21,7 +21,13 @@ export function PerformanceTesting() {
     setResults(null);
     
     try {
-      const testResults = await performanceMonitor.testRuralConnectivity();
+      // TODO: Implement rural connectivity test
+      // const testResults = await performanceMonitor.testRuralConnectivity();
+      const testResults = {
+        baselineReport: { metrics: [] },
+        throttledReport: { metrics: [] },
+        recommendations: ['Rural connectivity test not yet implemented']
+      };
       setResults(testResults);
     } catch (error) {
       console.error('Performance test failed:', error);
@@ -31,12 +37,12 @@ export function PerformanceTesting() {
   };
 
   const getCurrentReport = () => {
-    const report = performanceMonitor.getReport(60000); // Last minute
+    const report = performanceMonitor.getReport(); // Current report
     setCurrentReport(report);
   };
 
   const clearMetrics = () => {
-    performanceMonitor.clear();
+    performanceMonitor.clearMetrics();
     setCurrentReport(null);
     setResults(null);
   };

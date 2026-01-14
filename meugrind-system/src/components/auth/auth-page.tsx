@@ -48,7 +48,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
         {mode === 'signup' && (
           <SignUpForm
             onSuccess={handleSignUpSuccess}
-            onLoginClick={() => setMode('login')}
+            onSignInClick={() => setMode('login')}
           />
         )}
 

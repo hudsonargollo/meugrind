@@ -11,7 +11,8 @@ interface PersonalDashboardProps {
 }
 
 export function PersonalDashboard({ className }: PersonalDashboardProps) {
-  const { isPersonal } = useAuth();
+  const { user, hasRole } = useAuth();
+  const isPersonal = hasRole('personal');
   const { isMobile, isTablet } = useInterfaceContext();
 
   if (!isPersonal) {

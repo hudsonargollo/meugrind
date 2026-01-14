@@ -5,21 +5,30 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SignUpForm } from '../../../components/auth/signup-form';
 import { useAuth } from '../../../hooks/use-auth';
+
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
 
 export default function SignUpPage() {
   const router = useRouter();
   const { isAuthenticated, loading } = useAuth();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated && !loading) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && isAuthenticated && !loading) {
       router.push('/');
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, mounted]);
 
-  if (loading) {
+  // Show loading during SSR and initial hydration
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

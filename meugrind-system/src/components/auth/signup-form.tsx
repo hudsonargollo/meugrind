@@ -7,7 +7,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuthOperations } from '../../hooks/use-auth';
+import authService from '../../lib/supabase-auth-service';
 
 interface SignUpFormProps {
   onSuccess?: () => void;
@@ -16,7 +16,6 @@ interface SignUpFormProps {
 }
 
 export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpFormProps) {
-  const { signUp, loading, error, clearError } = useAuthOperations();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -27,6 +26,8 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
   });
   const [showPassword, setShowPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -61,22 +62,26 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
+    setError(null);
 
     if (!validateForm()) {
       return;
     }
 
-    const result = await signUp({
+    setLoading(true);
+    const result = await authService.signUp({
       email: formData.email,
       password: formData.password,
       role: formData.role,
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
     });
+    setLoading(false);
 
     if (result.success) {
       onSuccess?.();
+    } else {
+      setError(result.error || 'Sign up failed');
     }
   };
 
@@ -89,7 +94,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
       setValidationErrors(prev => ({ ...prev, [name]: '' }));
     }
     
-    if (error) clearError();
+    if (error) setError(null);
   };
 
   const getFieldError = (fieldName: string) => {

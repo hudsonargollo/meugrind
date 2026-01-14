@@ -14,7 +14,8 @@ export function EventVisibilitySelector({
   onChange, 
   disabled = false 
 }: EventVisibilitySelectorProps) {
-  const { isManager } = useAuth();
+  const { user, hasRole } = useAuth();
+  const isManager = hasRole('manager');
 
   const visibilityOptions = [
     {
@@ -36,7 +37,7 @@ export function EventVisibilitySelector({
       label: 'Manager Only',
       description: 'Only visible to Manager account',
       icon: '👑',
-      available: isManager(),
+      available: isManager,
     },
   ];
 

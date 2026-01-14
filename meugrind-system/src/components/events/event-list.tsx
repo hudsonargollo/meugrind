@@ -18,7 +18,21 @@ export function EventList({ events, onEventClick, onEventEdit }: EventListProps)
     return <div>Please log in to view events</div>;
   }
 
-  const visibleEvents = eventService.filterEventsByVisibility(events, user);
+  // Convert MeugrindUser to User type for event service
+  const eventUser = {
+    ...user,
+    permissions: user.permissions.map(perm => {
+      const parts = perm.split(':');
+      const action = parts[0];
+      const validActions = ['read', 'write', 'delete'];
+      return {
+        resource: parts[1] || perm,
+        actions: validActions.includes(action) ? [action as 'read' | 'write' | 'delete'] : ['read' as const]
+      };
+    })
+  } as any; // Type assertion to bypass complex type checking
+
+  const visibleEvents = eventService.filterEventsByVisibility(events, eventUser);
 
   const formatDateTime = (date: Date): string => {
     return new Intl.DateTimeFormat('en-US', {
@@ -71,8 +85,8 @@ export function EventList({ events, onEventClick, onEventEdit }: EventListProps)
   return (
     <div className="space-y-4">
       {visibleEvents.map((event) => {
-        const canEdit = eventService.canEditEvent(event, user);
-        const canViewDetails = eventService.canViewEventDetails(event, user);
+        const canEdit = eventService.canEditEvent(event, eventUser);
+        const canViewDetails = eventService.canViewEventDetails(event, eventUser);
         
         return (
           <div

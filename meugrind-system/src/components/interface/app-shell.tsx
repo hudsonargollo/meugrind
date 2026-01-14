@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/use-auth';
+import authService from '../../lib/supabase-auth-service';
 import { useInterfaceContext } from '../../hooks/use-interface-context';
 import { ModuleNavigation, ModuleId, useModuleComponent } from './module-navigation';
 import { ContextSwitcher } from './context-switcher';
@@ -10,7 +11,11 @@ import { PowerManagementIndicator } from './power-management-indicator';
 import { ResponsiveDashboard } from './responsive-dashboard';
 
 export function AppShell() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  
+  const handleSignOut = async () => {
+    await authService.signOut();
+  };
   const { context, isPerformance, isMobile } = useInterfaceContext();
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
 
@@ -86,7 +91,7 @@ export function AppShell() {
                 
                 {!isPerformance && (
                   <button
-                    onClick={signOut}
+                    onClick={handleSignOut}
                     className="text-sm text-red-600 hover:text-red-700 px-2 py-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     Sign Out

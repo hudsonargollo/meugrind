@@ -22,7 +22,7 @@ export function PermissionGuard({
     return <>{fallback}</>;
   }
 
-  if (!hasPermission(resource, action)) {
+  if (!hasPermission(`${action}:${resource}`)) {
     return <>{fallback}</>;
   }
 

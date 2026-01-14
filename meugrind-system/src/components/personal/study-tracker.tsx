@@ -33,7 +33,8 @@ interface StudyTrackerProps {
 }
 
 export function StudyTracker({ className }: StudyTrackerProps) {
-  const { isPersonal } = useAuth();
+  const { user, hasRole } = useAuth();
+  const isPersonal = hasRole('personal');
   const [categories] = useState<StudyCategory[]>(personalDashboardService.getStudyCategories());
   const [progress, setProgress] = useState<StudyProgress[]>([]);
   const [statistics, setStatistics] = useState({
@@ -54,7 +55,7 @@ export function StudyTracker({ className }: StudyTrackerProps) {
   const [studyResources, setStudyResources] = useState('');
 
   useEffect(() => {
-    if (isPersonal()) {
+    if (isPersonal) {
       loadStudyData();
     }
   }, [isPersonal]);

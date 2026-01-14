@@ -20,9 +20,23 @@ import authService, {
  * Provides current auth state and loading status
  */
 export function useAuth() {
-  const [authState, setAuthState] = useState<AuthState>(authService.getCurrentAuthState());
+  const [authState, setAuthState] = useState<AuthState>(() => {
+    // Provide safe defaults for SSR
+    if (typeof window === 'undefined') {
+      return {
+        user: null,
+        session: null,
+        loading: true,
+        error: null,
+      };
+    }
+    return authService.getCurrentAuthState();
+  });
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     const unsubscribe = authService.onAuthStateChange(setAuthState);
     return unsubscribe;
   }, []);
@@ -32,10 +46,10 @@ export function useAuth() {
     session: authState.session,
     loading: authState.loading,
     error: authState.error,
-    isAuthenticated: authService.isAuthenticated(),
-    hasPermission: authService.hasPermission.bind(authService),
-    hasRole: authService.hasRole.bind(authService),
-    clearError: authService.clearError.bind(authService),
+    isAuthenticated: typeof window !== 'undefined' ? authService.isAuthenticated() : false,
+    hasPermission: typeof window !== 'undefined' ? authService.hasPermission.bind(authService) : () => false,
+    hasRole: typeof window !== 'undefined' ? authService.hasRole.bind(authService) : () => false,
+    clearError: typeof window !== 'undefined' ? authService.clearError.bind(authService) : () => {},
   };
 }
 
