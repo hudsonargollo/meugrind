@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Lazy Loading Utilities
  * 
@@ -13,9 +12,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
  */
 export function useIntersectionObserver(
   options: IntersectionObserverInit = {}
-): [React.RefObject<HTMLElement>, boolean] {
+): [React.RefObject<HTMLDivElement>, boolean] {
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -351,7 +350,7 @@ export function LazyImage({
         src={imageSrc}
         className={`transition-opacity duration-300 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
-        } ${props.className || ''}`}
+        }`}
         loading="lazy"
       />
       {!isLoaded && (
@@ -367,8 +366,6 @@ export function LazyImage({
 export const bundleSplitting = {
   // Lazy load heavy libraries
   loadChartLibrary: () => import('recharts'),
-  loadDateLibrary: () => import('date-fns'),
-  loadPDFLibrary: () => import('jspdf'),
   
   // Preload critical resources
   preloadResource: (href: string, as: string = 'script') => {
