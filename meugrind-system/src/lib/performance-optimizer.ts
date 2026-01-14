@@ -127,7 +127,7 @@ class PerformanceOptimizer {
       }
       
       return imageUrl;
-    }).then(result => result.result);
+    });
   }
 
   // Optimize data queries with intelligent caching
@@ -166,7 +166,7 @@ class PerformanceOptimizer {
       await cacheManager.set(queryKey, result, { ttl });
       
       return result;
-    }).then(result => result.result);
+    });
   }
 
   // Optimize for battery usage
@@ -199,20 +199,20 @@ class PerformanceOptimizer {
 
   // Get performance recommendations
   async getRecommendations(): Promise<string[]> {
-    const report = performanceMonitor.getReport(300000); // Last 5 minutes
-    const recommendations: string[] = [];
+    const report = performanceMonitor.getReport();
+    const recommendations: string[] = [...report.summary.recommendations];
     
     // Check response times
-    if (report.sub200msPercentage < 95) {
+    if (report.summary.averageResponseTime > 200) {
       recommendations.push(
-        `Only ${report.sub200msPercentage.toFixed(1)}% of operations meet the sub-200ms requirement. Enable batching and caching.`
+        `Average response time is ${report.summary.averageResponseTime.toFixed(1)}ms. Consider enabling batching and caching.`
       );
     }
     
     // Check for slow operations
-    const slowOperations = Object.entries(report.operationsByType)
-      .filter(([_, stats]) => stats.averageTime > 200)
-      .map(([type, _]) => type);
+    const slowOperations = report.summary.slowestOperations
+      .filter(op => op.value > 200)
+      .map(op => op.name);
     
     if (slowOperations.length > 0) {
       recommendations.push(

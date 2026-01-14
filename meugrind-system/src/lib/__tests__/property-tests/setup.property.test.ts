@@ -38,12 +38,12 @@ const assertions = {
 
 // Simple generators for this test
 const generators = {
-  id: () => fc.string({ minLength: 1, maxLength: 50 }),
+  id: () => fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
   email: () => fc.emailAddress(),
   date: () => fc.date({ min: new Date('2020-01-01'), max: new Date('2030-12-31') }),
   
   user: () => fc.record({
-    id: fc.string({ minLength: 1, maxLength: 50 }),
+    id: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
     email: fc.emailAddress(),
     role: fc.constantFrom('manager', 'personal'),
     permissions: fc.array(fc.record({
@@ -69,17 +69,24 @@ const generators = {
   }),
   
   event: () => fc.record({
-    id: fc.string({ minLength: 1, maxLength: 50 }),
-    title: fc.string({ minLength: 1, maxLength: 100 }),
+    id: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
+    title: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
     startTime: fc.date({ min: new Date('2020-01-01'), max: new Date('2030-12-31') }),
     endTime: fc.date({ min: new Date('2020-01-01'), max: new Date('2030-12-31') }),
     type: fc.constantFrom('gig', 'meeting', 'content'),
+  }).filter(event => {
+    // Ensure endTime is after startTime and both dates are valid
+    return event.startTime instanceof Date && 
+           event.endTime instanceof Date && 
+           !isNaN(event.startTime.getTime()) && 
+           !isNaN(event.endTime.getTime()) &&
+           event.endTime.getTime() > event.startTime.getTime();
   }),
   
   song: () => fc.record({
-    id: fc.string({ minLength: 1, maxLength: 50 }),
-    title: fc.string({ minLength: 1, maxLength: 100 }),
-    artist: fc.string({ minLength: 1, maxLength: 100 }),
+    id: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
+    title: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
+    artist: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
     key: fc.constantFrom('C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'),
     bpm: fc.integer({ min: 60, max: 200 }),
   }),

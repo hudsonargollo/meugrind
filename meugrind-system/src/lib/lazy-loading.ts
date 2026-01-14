@@ -320,8 +320,6 @@ export function LazyWrapper({
     </div>
   );
 }
-  );
-}
 
 /**
  * Lazy image component

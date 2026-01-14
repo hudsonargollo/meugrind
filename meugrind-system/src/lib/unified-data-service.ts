@@ -57,7 +57,7 @@ class UnifiedDataService {
 
   // Generic CRUD operations
   async create<T extends UnifiedEntity>(entity: Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'syncStatus' | 'version'>): Promise<T> {
-    return performanceMonitor.measure(`create_${entity.type}`, async () => {
+    return performanceMonitor.measureAsync(`create_${entity.type}`, async () => {
       const now = new Date();
       const newEntity = {
         ...entity,
@@ -72,11 +72,11 @@ class UnifiedDataService {
       await this.syncManager.queueOperation(entity.type, newEntity.id, 'create', newEntity);
       
       return newEntity;
-    }).then(result => result.result);
+    });
   }
 
   async update<T extends UnifiedEntity>(type: string, id: string, updates: Partial<T>): Promise<T> {
-    return performanceMonitor.measure(`update_${type}`, async () => {
+    return performanceMonitor.measureAsync(`update_${type}`, async () => {
       const existing = await this.db.findById(type, id);
       if (!existing) {
         throw new Error(`Entity not found: ${type}/${id}`);
@@ -94,17 +94,17 @@ class UnifiedDataService {
       await this.syncManager.queueOperation(type, id, 'update', updated);
       
       return updated;
-    }).then(result => result.result);
+    });
   }
   async delete(type: string, id: string): Promise<void> {
-    return performanceMonitor.measure(`delete_${type}`, async () => {
+    return performanceMonitor.measureAsync(`delete_${type}`, async () => {
       await this.db.delete(type, id);
       await this.syncManager.queueOperation(type, id, 'delete', null);
-    }).then(result => result.result);
+    });
   }
 
   async findById<T extends UnifiedEntity>(type: string, id: string): Promise<T | null> {
-    return performanceMonitor.measure(`findById_${type}`, async () => {
+    return performanceMonitor.measureAsync(`findById_${type}`, async () => {
       // Try cache first
       const cached = await this.cacheManager.get(`${type}:${id}`);
       if (cached) {
@@ -118,13 +118,13 @@ class UnifiedDataService {
       }
       
       return entity as T;
-    }).then(result => result.result);
+    });
   }
 
   async findAll<T extends UnifiedEntity>(type: string, filters?: Record<string, any>): Promise<T[]> {
-    return performanceMonitor.measure(`findAll_${type}`, async () => {
+    return performanceMonitor.measureAsync(`findAll_${type}`, async () => {
       return this.db.findAll(type, filters) as Promise<T[]>;
-    }).then(result => result.result);
+    });
   }
 
   async findByUser<T extends UnifiedEntity>(type: string, userId: string): Promise<T[]> {
