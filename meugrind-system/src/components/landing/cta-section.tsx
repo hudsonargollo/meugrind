@@ -3,20 +3,22 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, Zap, CheckCircle } from 'lucide-react';
+import { useLanguage } from '@/hooks/use-language';
 
 interface CTASectionProps {
   onGetStarted: () => void;
   onSignIn: () => void;
 }
 
-const benefits = [
-  'Start free, upgrade when you&rsquo;re ready',
-  'No credit card required',
-  'Full offline functionality',
-  'Instant setup in under 2 minutes',
-];
-
 export function CTASection({ onGetStarted, onSignIn }: CTASectionProps) {
+  const { translations } = useLanguage();
+
+  const benefits = [
+    translations.cta.benefits.startFree,
+    translations.cta.benefits.noCreditCard,
+    translations.cta.benefits.fullOffline,
+    translations.cta.benefits.instantSetup,
+  ];
   return (
     <section className="py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
       {/* Background effects */}
@@ -61,7 +63,7 @@ export function CTASection({ onGetStarted, onSignIn }: CTASectionProps) {
             whileTap={{ scale: 0.95 }}
           >
             <Sparkles className="w-4 h-4 mr-2" />
-            Join thousands of successful creatives
+            {translations.cta.badge}
           </motion.div>
         </motion.div>
 
@@ -72,10 +74,10 @@ export function CTASection({ onGetStarted, onSignIn }: CTASectionProps) {
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          Ready to Transform
+          {translations.cta.title}
           <br />
           <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Your Creative Workflow?
+            {translations.cta.subtitle}
           </span>
         </motion.h2>
 
@@ -86,8 +88,7 @@ export function CTASection({ onGetStarted, onSignIn }: CTASectionProps) {
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          Stop juggling multiple tools and platforms. Start managing all your creative 
-          ventures from one powerful, unified system designed specifically for you.
+          {translations.cta.description}
         </motion.p>
 
         {/* Benefits list */}

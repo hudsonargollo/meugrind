@@ -2,24 +2,27 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { LanguageToggle } from '@/components/ui/language-toggle';
 import { Menu, X, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 interface NavigationProps {
   onGetStarted: () => void;
   onSignIn: () => void;
 }
 
-const navItems = [
-  { label: 'Features', href: '#features' },
-  { label: 'Testimonials', href: '#testimonials' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
-];
-
 export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
+  const { translations } = useLanguage();
+  
+  const navItems = [
+    { label: translations.nav.features, href: '#features' },
+    { label: translations.nav.testimonials, href: '#testimonials' },
+    { label: translations.nav.pricing, href: '#pricing' },
+    { label: translations.nav.faq, href: '#faq' },
+  ];
   
   const backgroundColor = useTransform(
     scrollY,
@@ -62,7 +65,7 @@ export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
   return (
     <>
       <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8"
+        className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 mt-10"
         style={{
           backgroundColor,
           backdropFilter: backdropBlur,
@@ -103,15 +106,16 @@ export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
                 ))}
               </div>
 
-              {/* Desktop CTA Buttons */}
+              {/* Desktop CTA Buttons and Language Toggle */}
               <div className="hidden md:flex items-center space-x-4">
+                <LanguageToggle variant="compact" className="text-white" />
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     onClick={onSignIn}
                     variant="ghost"
                     className="text-white hover:bg-white/10"
                   >
-                    Sign In
+                    {translations.nav.signIn}
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -119,7 +123,7 @@ export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
                     onClick={onGetStarted}
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
                   >
-                    Get Started
+                    {translations.nav.getStarted}
                   </Button>
                 </motion.div>
               </div>
@@ -186,6 +190,9 @@ export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
               delay: isOpen ? 0.6 : 0 
             }}
           >
+            <div className="flex justify-center mb-4">
+              <LanguageToggle />
+            </div>
             <Button
               onClick={() => {
                 onSignIn();
@@ -195,7 +202,7 @@ export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
               size="lg"
               className="border-white/30 text-white hover:bg-white/10 px-8 py-3"
             >
-              Sign In
+              {translations.nav.signIn}
             </Button>
             <Button
               onClick={() => {
@@ -205,7 +212,7 @@ export function Navigation({ onGetStarted, onSignIn }: NavigationProps) {
               size="lg"
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3"
             >
-              Get Started
+              {translations.nav.getStarted}
             </Button>
           </motion.div>
         </motion.div>

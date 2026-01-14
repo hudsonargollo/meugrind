@@ -16,95 +16,97 @@ import {
   Brain,
   Timer
 } from 'lucide-react';
-
-const features = [
-  {
-    icon: Zap,
-    title: 'Offline-First Architecture',
-    description: 'Work seamlessly without internet. Your data syncs automatically when you\'re back online.',
-    gradient: 'from-yellow-400 to-orange-500',
-    delay: 0.1,
-  },
-  {
-    icon: Layers,
-    title: 'Multi-Context Management',
-    description: 'Switch between band management, influencer campaigns, solar business, and personal projects effortlessly.',
-    gradient: 'from-purple-400 to-pink-500',
-    delay: 0.2,
-  },
-  {
-    icon: BarChart3,
-    title: 'Performance Analytics',
-    description: 'Track your productivity across all contexts with detailed insights and performance metrics.',
-    gradient: 'from-blue-400 to-cyan-500',
-    delay: 0.3,
-  },
-  {
-    icon: RefreshCw,
-    title: 'Real-time Synchronization',
-    description: 'Your data stays in sync across all devices with conflict-free collaborative editing.',
-    gradient: 'from-green-400 to-emerald-500',
-    delay: 0.4,
-  },
-  {
-    icon: Music,
-    title: 'Band Management Suite',
-    description: 'Manage setlists, call sheets, tech riders, and contractor payments all in one place.',
-    gradient: 'from-red-400 to-rose-500',
-    delay: 0.5,
-  },
-  {
-    icon: Camera,
-    title: 'Influencer Campaign Hub',
-    description: 'Track brand deals, manage content pipelines, and avoid conflicts with intelligent scheduling.',
-    gradient: 'from-indigo-400 to-purple-500',
-    delay: 0.6,
-  },
-  {
-    icon: Sun,
-    title: 'Solar Business Tools',
-    description: 'Lead capture, project tracking, and sales reporting designed for solar professionals.',
-    gradient: 'from-amber-400 to-yellow-500',
-    delay: 0.7,
-  },
-  {
-    icon: Megaphone,
-    title: 'PR Event Coordination',
-    description: 'Schedule appearances, track talking points, and manage your public relations calendar.',
-    gradient: 'from-teal-400 to-cyan-500',
-    delay: 0.8,
-  },
-  {
-    icon: Brain,
-    title: 'Personal Productivity',
-    description: 'Study tracking, habit formation, and personal goal management with advanced analytics.',
-    gradient: 'from-violet-400 to-purple-500',
-    delay: 0.9,
-  },
-  {
-    icon: Timer,
-    title: 'Focus & Time Management',
-    description: 'Pomodoro timers, focus modes, and distraction blocking to maximize your creative output.',
-    gradient: 'from-pink-400 to-red-500',
-    delay: 1.0,
-  },
-  {
-    icon: Shield,
-    title: 'Privacy Shield',
-    description: 'Control what information is visible in each context. Keep your personal and professional lives separate.',
-    gradient: 'from-slate-400 to-gray-500',
-    delay: 1.1,
-  },
-  {
-    icon: Users,
-    title: 'Collaborative Workflows',
-    description: 'Share projects with team members while maintaining granular control over permissions and visibility.',
-    gradient: 'from-emerald-400 to-teal-500',
-    delay: 1.2,
-  },
-];
+import { useLanguage } from '@/hooks/use-language';
 
 export function FeaturesShowcase() {
+  const { translations } = useLanguage();
+
+  const features = [
+    {
+      icon: Zap,
+      title: translations.features.items.offlineFirst.title,
+      description: translations.features.items.offlineFirst.description,
+      gradient: 'from-yellow-400 to-orange-500',
+      delay: 0.1,
+    },
+    {
+      icon: Layers,
+      title: translations.features.items.multiContext.title,
+      description: translations.features.items.multiContext.description,
+      gradient: 'from-purple-400 to-pink-500',
+      delay: 0.2,
+    },
+    {
+      icon: BarChart3,
+      title: translations.features.items.analytics.title,
+      description: translations.features.items.analytics.description,
+      gradient: 'from-blue-400 to-cyan-500',
+      delay: 0.3,
+    },
+    {
+      icon: RefreshCw,
+      title: translations.features.items.realTimeSync.title,
+      description: translations.features.items.realTimeSync.description,
+      gradient: 'from-green-400 to-emerald-500',
+      delay: 0.4,
+    },
+    {
+      icon: Music,
+      title: translations.features.items.bandManagement.title,
+      description: translations.features.items.bandManagement.description,
+      gradient: 'from-red-400 to-rose-500',
+      delay: 0.5,
+    },
+    {
+      icon: Camera,
+      title: translations.features.items.influencerHub.title,
+      description: translations.features.items.influencerHub.description,
+      gradient: 'from-indigo-400 to-purple-500',
+      delay: 0.6,
+    },
+    {
+      icon: Sun,
+      title: translations.features.items.solarBusiness.title,
+      description: translations.features.items.solarBusiness.description,
+      gradient: 'from-amber-400 to-yellow-500',
+      delay: 0.7,
+    },
+    {
+      icon: Megaphone,
+      title: translations.features.items.prEvents.title,
+      description: translations.features.items.prEvents.description,
+      gradient: 'from-teal-400 to-cyan-500',
+      delay: 0.8,
+    },
+    {
+      icon: Brain,
+      title: translations.features.items.personalProductivity.title,
+      description: translations.features.items.personalProductivity.description,
+      gradient: 'from-violet-400 to-purple-500',
+      delay: 0.9,
+    },
+    {
+      icon: Timer,
+      title: translations.features.items.focusManagement.title,
+      description: translations.features.items.focusManagement.description,
+      gradient: 'from-pink-400 to-red-500',
+      delay: 1.0,
+    },
+    {
+      icon: Shield,
+      title: translations.features.items.privacyShield.title,
+      description: translations.features.items.privacyShield.description,
+      gradient: 'from-slate-400 to-gray-500',
+      delay: 1.1,
+    },
+    {
+      icon: Users,
+      title: translations.features.items.collaborative.title,
+      description: translations.features.items.collaborative.description,
+      gradient: 'from-emerald-400 to-teal-500',
+      delay: 1.2,
+    },
+  ];
   return (
     <section className="py-24 bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,9 +124,9 @@ export function FeaturesShowcase() {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Everything You Need to
+            {translations.features.title}
             <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent block">
-              Dominate Your Grind
+              {translations.features.subtitle}
             </span>
           </motion.h2>
           <motion.p
@@ -134,8 +136,7 @@ export function FeaturesShowcase() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            Built specifically for multi-hyphenate creatives who refuse to compromise. 
-            One system, infinite possibilities.
+            {translations.features.description}
           </motion.p>
         </motion.div>
 
@@ -199,7 +200,7 @@ export function FeaturesShowcase() {
             whileTap={{ scale: 0.95 }}
           >
             <Zap className="w-5 h-5 mr-2" />
-            Ready to supercharge your productivity?
+            {translations.features.readyToSupercharge}
           </motion.div>
         </motion.div>
       </div>

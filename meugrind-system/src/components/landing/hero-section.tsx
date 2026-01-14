@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/hooks/use-language';
 
 interface HeroSectionProps {
   onGetStarted: () => void;
@@ -10,8 +11,10 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
+  const { translations } = useLanguage();
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20">{/* Added pt-20 for header spacing */}
       {/* Animated background elements */}
       <div className="absolute inset-0">
         <motion.div
@@ -74,7 +77,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
             whileTap={{ scale: 0.95 }}
           >
             <Sparkles className="w-4 h-4 mr-2" />
-            The Ultimate Productivity System for Multi-Hyphenate Creatives
+            {translations.hero.badge}
           </motion.div>
         </motion.div>
 
@@ -98,7 +101,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
               backgroundSize: '200% 200%',
             }}
           >
-            MEUGRIND
+            {translations.hero.title.meugrind}
           </motion.span>
           <br />
           <motion.span
@@ -106,7 +109,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
-            Unleash Your
+            {translations.hero.title.unleash}
           </motion.span>
           <br />
           <motion.span
@@ -115,7 +118,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.2, duration: 0.8 }}
           >
-            Creative Power
+            {translations.hero.title.creativePower}
           </motion.span>
         </motion.h1>
 
@@ -125,9 +128,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          The only productivity system designed for creators who wear multiple hats. 
-          Seamlessly manage your band, influence campaigns, solar business, PR events, 
-          and personal projects—all in one powerful, offline-first platform.
+          {translations.hero.description}
         </motion.p>
 
         <motion.div
@@ -149,7 +150,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
                 transition={{ duration: 0.6 }}
               />
               <span className="relative flex items-center">
-                Get Started Free
+                {translations.hero.getStartedFree}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
             </Button>
@@ -163,7 +164,7 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
               className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full backdrop-blur-sm"
             >
               <Play className="mr-2 w-5 h-5" />
-              Sign In
+              {translations.hero.signIn}
             </Button>
           </motion.div>
         </motion.div>
@@ -177,19 +178,19 @@ export function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
         >
           <div className="flex items-center">
             <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
-            Offline-First Technology
+            {translations.hero.trustIndicators.offlineFirst}
           </div>
           <div className="flex items-center">
             <div className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse" />
-            Real-time Sync
+            {translations.hero.trustIndicators.realTimeSync}
           </div>
           <div className="flex items-center">
             <div className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse" />
-            Multi-Context Support
+            {translations.hero.trustIndicators.multiContext}
           </div>
           <div className="flex items-center">
             <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse" />
-            Performance Optimized
+            {translations.hero.trustIndicators.performanceOptimized}
           </div>
         </motion.div>
       </div>
