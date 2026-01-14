@@ -2,33 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Zap, Twitter, Github, Linkedin, Mail, Heart } from 'lucide-react';
-
-const footerLinks = {
-  product: [
-    { label: 'Features', href: '#features' },
-    { label: 'Pricing', href: '#pricing' },
-    { label: 'Testimonials', href: '#testimonials' },
-    { label: 'FAQ', href: '#faq' },
-  ],
-  company: [
-    { label: 'About', href: '/about' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Careers', href: '/careers' },
-    { label: 'Contact', href: '/contact' },
-  ],
-  resources: [
-    { label: 'Documentation', href: '/docs' },
-    { label: 'Help Center', href: '/help' },
-    { label: 'Community', href: '/community' },
-    { label: 'Status', href: '/status' },
-  ],
-  legal: [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
-    { label: 'GDPR', href: '/gdpr' },
-  ],
-};
+import { useLanguage } from '@/hooks/use-language';
 
 const socialLinks = [
   { icon: Twitter, href: 'https://twitter.com/meugrind', label: 'Twitter' },
@@ -38,6 +12,34 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const { translations } = useLanguage();
+
+  const footerLinks = {
+    product: [
+      { label: 'Features', href: '#features' },
+      { label: 'Pricing', href: '#pricing' },
+      { label: 'Testimonials', href: '#testimonials' },
+      { label: 'FAQ', href: '#faq' },
+    ],
+    company: [
+      { label: 'About', href: '/about' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Contact', href: '/contact' },
+    ],
+    resources: [
+      { label: 'Documentation', href: '/docs' },
+      { label: 'Help Center', href: '/help' },
+      { label: 'Community', href: '/community' },
+      { label: 'Status', href: '/status' },
+    ],
+    legal: [
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+      { label: 'Cookie Policy', href: '/cookies' },
+      { label: 'GDPR', href: '/gdpr' },
+    ],
+  };
   const scrollToSection = (href: string) => {
     if (href.startsWith('#')) {
       const element = document.querySelector(href);
@@ -68,8 +70,7 @@ export function Footer() {
             </motion.div>
             
             <p className="text-gray-400 mb-6 leading-relaxed">
-              The ultimate productivity system for multi-hyphenate creatives. 
-              Manage all your ventures from one powerful, offline-first platform.
+              {translations.footer.description}
             </p>
             
             {/* Social links */}
@@ -95,7 +96,7 @@ export function Footer() {
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="font-semibold text-white mb-4 capitalize">
-                {category}
+                {translations.footer.links[category as keyof typeof translations.footer.links]}
               </h3>
               <ul className="space-y-3">
                 {links.map((link) => (
@@ -125,16 +126,15 @@ export function Footer() {
         >
           <div className="max-w-2xl mx-auto text-center">
             <h3 className="text-2xl font-bold mb-4">
-              Stay Updated with MEUGRIND
+              {translations.footer.newsletter.title}
             </h3>
             <p className="text-gray-400 mb-6">
-              Get the latest updates, productivity tips, and feature announcements 
-              delivered to your inbox.
+              {translations.footer.newsletter.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={translations.footer.newsletter.placeholder}
                 className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
               <motion.button
@@ -142,7 +142,7 @@ export function Footer() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Subscribe
+                {translations.footer.newsletter.subscribe}
               </motion.button>
             </div>
           </div>
@@ -152,11 +152,11 @@ export function Footer() {
         <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center text-gray-400 text-sm">
-              <span>© 2024 MEUGRIND. All rights reserved.</span>
+              <span>{translations.footer.copyright}</span>
             </div>
             
             <div className="flex items-center text-gray-400 text-sm">
-              <span>Made with</span>
+              <span>{translations.footer.madeWith}</span>
               <motion.div
                 className="mx-1"
                 animate={{
@@ -170,7 +170,7 @@ export function Footer() {
               >
                 <Heart className="w-4 h-4 text-red-500 fill-current" />
               </motion.div>
-              <span>for multi-hyphenate creatives</span>
+              <span>{translations.footer.forCreatives}</span>
             </div>
           </div>
         </div>

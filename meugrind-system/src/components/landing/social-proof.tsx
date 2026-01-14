@@ -3,70 +3,72 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Star, Quote, TrendingUp, Users, Clock, CheckCircle } from 'lucide-react';
-
-const testimonials = [
-  {
-    name: 'Sarah Chen',
-    role: 'Multi-Hyphenate Creative',
-    avatar: '👩‍🎨',
-    content: 'MEUGRIND transformed how I manage my music career, design business, and personal projects. The offline-first approach means I never lose momentum, even when traveling.',
-    rating: 5,
-    contexts: ['Music', 'Design', 'Personal'],
-  },
-  {
-    name: 'Marcus Rodriguez',
-    role: 'Solar Entrepreneur & Influencer',
-    avatar: '🌟',
-    content: 'Finally, a system that understands my complex workflow. Managing solar leads while creating content has never been this seamless.',
-    rating: 5,
-    contexts: ['Solar', 'Influencer', 'Business'],
-  },
-  {
-    name: 'Alex Thompson',
-    role: 'Band Manager & PR Specialist',
-    avatar: '🎵',
-    content: 'The band management tools are incredible. Call sheets, setlists, and contractor payments all in one place. My artists love the organization.',
-    rating: 5,
-    contexts: ['Band', 'PR', 'Events'],
-  },
-  {
-    name: 'Jordan Kim',
-    role: 'Creative Director',
-    avatar: '🚀',
-    content: 'The privacy shield feature is a game-changer. I can keep my personal projects separate from client work while maintaining a unified workflow.',
-    rating: 5,
-    contexts: ['Creative', 'Business', 'Personal'],
-  },
-];
-
-const metrics = [
-  {
-    icon: Users,
-    value: '10,000+',
-    label: 'Active Creatives',
-    description: 'Multi-hyphenate professionals trust MEUGRIND',
-  },
-  {
-    icon: TrendingUp,
-    value: '300%',
-    label: 'Productivity Increase',
-    description: 'Average improvement in task completion',
-  },
-  {
-    icon: Clock,
-    value: '2.5M+',
-    label: 'Hours Saved',
-    description: 'Time recovered through smart automation',
-  },
-  {
-    icon: CheckCircle,
-    value: '99.9%',
-    label: 'Uptime',
-    description: 'Reliable offline-first architecture',
-  },
-];
+import { useLanguage } from '@/hooks/use-language';
 
 export function SocialProof() {
+  const { translations } = useLanguage();
+
+  const testimonials = [
+    {
+      name: 'Sarah Chen',
+      role: 'Multi-Hyphenate Creative',
+      avatar: '👩‍🎨',
+      content: 'MEUGRIND transformed how I manage my music career, design business, and personal projects. The offline-first approach means I never lose momentum, even when traveling.',
+      rating: 5,
+      contexts: ['Music', 'Design', 'Personal'],
+    },
+    {
+      name: 'Marcus Rodriguez',
+      role: 'Solar Entrepreneur & Influencer',
+      avatar: '🌟',
+      content: 'Finally, a system that understands my complex workflow. Managing solar leads while creating content has never been this seamless.',
+      rating: 5,
+      contexts: ['Solar', 'Influencer', 'Business'],
+    },
+    {
+      name: 'Alex Thompson',
+      role: 'Band Manager & PR Specialist',
+      avatar: '🎵',
+      content: 'The band management tools are incredible. Call sheets, setlists, and contractor payments all in one place. My artists love the organization.',
+      rating: 5,
+      contexts: ['Band', 'PR', 'Events'],
+    },
+    {
+      name: 'Jordan Kim',
+      role: 'Creative Director',
+      avatar: '🚀',
+      content: 'The privacy shield feature is a game-changer. I can keep my personal projects separate from client work while maintaining a unified workflow.',
+      rating: 5,
+      contexts: ['Creative', 'Business', 'Personal'],
+    },
+  ];
+
+  const metrics = [
+    {
+      icon: Users,
+      value: '10,000+',
+      label: translations.socialProof.metrics.activeCreatives.label,
+      description: translations.socialProof.metrics.activeCreatives.description,
+    },
+    {
+      icon: TrendingUp,
+      value: '300%',
+      label: translations.socialProof.metrics.productivityIncrease.label,
+      description: translations.socialProof.metrics.productivityIncrease.description,
+    },
+    {
+      icon: Clock,
+      value: '2.5M+',
+      label: translations.socialProof.metrics.hoursSaved.label,
+      description: translations.socialProof.metrics.hoursSaved.description,
+    },
+    {
+      icon: CheckCircle,
+      value: '99.9%',
+      label: translations.socialProof.metrics.uptime.label,
+      description: translations.socialProof.metrics.uptime.description,
+    },
+  ];
   return (
     <section className="py-24 bg-gradient-to-b from-white to-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,9 +87,9 @@ export function SocialProof() {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Trusted by Creatives
+            {translations.socialProof.title}
             <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent block">
-              Worldwide
+              {translations.socialProof.subtitle}
             </span>
           </motion.h2>
         </motion.div>
@@ -142,10 +144,10 @@ export function SocialProof() {
           viewport={{ once: true }}
         >
           <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            What Creatives Are Saying
+            {translations.socialProof.testimonials.title}
           </h3>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Real stories from multi-hyphenate professionals who&rsquo;ve transformed their workflow
+            {translations.socialProof.testimonials.description}
           </p>
         </motion.div>
 
@@ -237,19 +239,19 @@ export function SocialProof() {
         >
           <div className="flex items-center text-gray-500">
             <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-            <span className="font-medium">SOC 2 Compliant</span>
+            <span className="font-medium">{translations.socialProof.trustBadges.soc2}</span>
           </div>
           <div className="flex items-center text-gray-500">
             <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-            <span className="font-medium">GDPR Ready</span>
+            <span className="font-medium">{translations.socialProof.trustBadges.gdpr}</span>
           </div>
           <div className="flex items-center text-gray-500">
             <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-            <span className="font-medium">End-to-End Encrypted</span>
+            <span className="font-medium">{translations.socialProof.trustBadges.encrypted}</span>
           </div>
           <div className="flex items-center text-gray-500">
             <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-            <span className="font-medium">99.9% Uptime SLA</span>
+            <span className="font-medium">{translations.socialProof.trustBadges.uptime}</span>
           </div>
         </motion.div>
       </div>

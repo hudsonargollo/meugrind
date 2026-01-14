@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import authService from '../../lib/supabase-auth-service';
+import { useLanguage } from '../../hooks/use-language';
 
 interface SignUpFormProps {
   onSuccess?: () => void;
@@ -16,6 +17,7 @@ interface SignUpFormProps {
 }
 
 export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpFormProps) {
+  const { translations } = useLanguage();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -110,10 +112,10 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
           </svg>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your MEUGRIND account
+          {translations.auth.signUp.title}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Join the productivity system designed for multi-hyphenate creatives
+          {translations.auth.signUp.description}
         </p>
       </div>
 
@@ -166,7 +168,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                First Name
+                {translations.auth.signUp.firstName}
               </label>
               <input
                 id="firstName"
@@ -178,7 +180,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
                 className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
                   getFieldError('firstName') ? 'border-red-300' : 'border-gray-300'
                 } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-                placeholder="First name"
+                placeholder={translations.auth.signUp.firstName}
               />
               {getFieldError('firstName') && (
                 <p className="mt-1 text-xs text-red-600">{getFieldError('firstName')}</p>
@@ -187,7 +189,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
 
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                Last Name
+                {translations.auth.signUp.lastName}
               </label>
               <input
                 id="lastName"
@@ -199,7 +201,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
                 className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
                   getFieldError('lastName') ? 'border-red-300' : 'border-gray-300'
                 } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-                placeholder="Last name"
+                placeholder={translations.auth.signUp.lastName}
               />
               {getFieldError('lastName') && (
                 <p className="mt-1 text-xs text-red-600">{getFieldError('lastName')}</p>
@@ -210,7 +212,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {translations.auth.signUp.email}
             </label>
             <input
               id="email"
@@ -223,7 +225,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
               className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
                 getFieldError('email') ? 'border-red-300' : 'border-gray-300'
               } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-              placeholder="Enter your email"
+              placeholder={translations.auth.signUp.email}
             />
             {getFieldError('email') && (
               <p className="mt-1 text-xs text-red-600">{getFieldError('email')}</p>
@@ -233,7 +235,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
           {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+              {translations.auth.signUp.password}
             </label>
             <div className="mt-1 relative">
               <input
@@ -247,7 +249,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
                 className={`appearance-none relative block w-full px-3 py-2 pr-10 border ${
                   getFieldError('password') ? 'border-red-300' : 'border-gray-300'
                 } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-                placeholder="Create a password"
+                placeholder={translations.auth.signUp.password}
               />
               <button
                 type="button"
@@ -277,7 +279,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
           {/* Confirm Password */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm Password
+              {translations.auth.signUp.confirmPassword}
             </label>
             <input
               id="confirmPassword"
@@ -290,7 +292,7 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
               className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
                 getFieldError('confirmPassword') ? 'border-red-300' : 'border-gray-300'
               } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
-              placeholder="Confirm your password"
+              placeholder={translations.auth.signUp.confirmPassword}
             />
             {getFieldError('confirmPassword') && (
               <p className="mt-1 text-xs text-red-600">{getFieldError('confirmPassword')}</p>
@@ -310,23 +312,23 @@ export function SignUpForm({ onSuccess, onSignInClick, className = '' }: SignUpF
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Creating account...
+                {translations.auth.signUp.signUpButton}...
               </>
             ) : (
-              'Create account'
+              translations.auth.signUp.signUpButton
             )}
           </button>
         </div>
 
         <div className="text-center">
           <span className="text-sm text-gray-600">
-            Already have an account?{' '}
+            {translations.auth.signUp.haveAccount}{' '}
             <button
               type="button"
               onClick={onSignInClick}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Sign in
+              {translations.auth.signUp.signIn}
             </button>
           </span>
         </div>

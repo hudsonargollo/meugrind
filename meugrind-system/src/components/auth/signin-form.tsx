@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import authService from '../../lib/supabase-auth-service';
+import { useLanguage } from '../../hooks/use-language';
 
 interface SignInFormProps {
   onSuccess?: () => void;
@@ -16,6 +17,7 @@ interface SignInFormProps {
 }
 
 export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInFormProps) {
+  const { translations } = useLanguage();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -58,10 +60,10 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
           </svg>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to MEUGRIND
+          {translations.auth.signIn.title}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Access your productivity system
+          {translations.auth.signIn.description}
         </p>
       </div>
 
@@ -89,7 +91,7 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
         <div className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {translations.auth.signIn.email}
             </label>
             <input
               id="email"
@@ -100,13 +102,13 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
               value={formData.email}
               onChange={handleInputChange}
               className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your email"
+              placeholder={translations.auth.signIn.email}
             />
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+              {translations.auth.signIn.password}
             </label>
             <div className="mt-1 relative">
               <input
@@ -118,7 +120,7 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
                 value={formData.password}
                 onChange={handleInputChange}
                 className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your password"
+                placeholder={translations.auth.signIn.password}
               />
               <button
                 type="button"
@@ -146,7 +148,7 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
               href="/auth/forgot-password"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Forgot your password?
+              {translations.auth.signIn.forgotPassword}
             </a>
           </div>
         </div>
@@ -163,23 +165,23 @@ export function SignInForm({ onSuccess, onSignUpClick, className = '' }: SignInF
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Signing in...
+                {translations.auth.signIn.signInButton}...
               </>
             ) : (
-              'Sign in'
+              translations.auth.signIn.signInButton
             )}
           </button>
         </div>
 
         <div className="text-center">
           <span className="text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
+            {translations.auth.signIn.noAccount}{' '}
             <button
               type="button"
               onClick={onSignUpClick}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Sign up
+              {translations.auth.signIn.signUp}
             </button>
           </span>
         </div>
