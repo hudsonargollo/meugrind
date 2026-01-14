@@ -22,7 +22,8 @@ const nextConfig = {
     ],
   }),
   
-  // Disable static export completely - use SSR for auth-protected app
+  // Enable static export for Cloudflare Pages
+  output: 'export',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   

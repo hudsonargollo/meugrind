@@ -106,13 +106,13 @@ function validateBuild() {
 }
 
 function deployToCloudflare(environment = 'production') {
-  const envFlag = environment === 'production' ? '--env production' : '--env preview';
+  const branchFlag = environment === 'production' ? '--branch main' : '--branch preview';
   const projectFlag = `--project-name ${PROJECT_NAME}`;
   
   log(`\n${colors.magenta}🚀 Deploying to Cloudflare Pages (${environment})...${colors.reset}`);
   
   try {
-    const command = `wrangler pages deploy ${BUILD_DIR} ${projectFlag} ${envFlag}`;
+    const command = `wrangler pages deploy ${BUILD_DIR} ${projectFlag} ${branchFlag}`;
     execSync(command, { stdio: 'inherit', cwd: __dirname });
     
     log(`\n${colors.green}🎉 Deployment successful!${colors.reset}`);
